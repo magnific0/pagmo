@@ -879,13 +879,10 @@ def _con2mo_ctor(self, problem=None, method='obj_cstrsvio'):
     Transforms a constrained problem into a multi-objective problem
 
     Three implementations of the constrained to multi-objective are available.
-    1) 'obj_cstrs': The multi-objective problem is created with two objectives. The first
-    objective is the same as that of the input problem, the second is the number of constraint violated
+    1) 'obj_cstrs': The multi-objective problem is created with im(f) + dim(g) + dim(h) objectives (i.e. one for each constraint). The first objectives are equal to the input problem, the remaining one for each objective.
     2) 'obj_cstrsvio': The multi-objective problem is created with two objectives. The first
     objective is the same as that of the input problem, the second is the norm of the total constraint violation
-    3) 'obj_eqvio_ineqvio': 	2) 'obj_cstrsvio': The multi-objective problem is created with three objectives. The first
-    objective is the same as that of the input problem, the second is the norm of the total equality constraint violation,
-    the third is the norm of the total inequality constraint violation.
+    3) 'obj_eqvio_ineqvio': The multi-objective problem is created with three objectives. The first objective is the same as that of the input problem, the second is the norm of the total equality constraint violation, the third is the norm of the total inequality constraint violation.
 
     USAGE: problem.con2mo(problem=PyGMO.cec2006(4), method='obj_cstrsvio')
 
@@ -950,6 +947,30 @@ def _con2uncon_ctor(self, problem=None, method=None):
 con2uncon._orig_init = con2uncon.__init__
 con2uncon.__init__ = _con2uncon_ctor
 
+def _cstr_game_theory_ctor(self, problem=None):
+    """
+    Transforms a constrained problem into a multi-objective problem
+
+    Implements a meta-problem class that wraps an constrained problem. The number of objectives is increased by one and the length of the chromosome by the total number of (in)equality constraints.
+
+    The resulting problem is an unconstrained multi-objective problem.
+
+    The added alleles are the weights for each of the constraints in the penalty function.
+
+    The added objective serves to maximize the penalty. Through this sabotages the other objectives. This incentiveses the population(s) responsible for the other objectivse to deal with the penalties in pressing order.
+
+    USAGE: problem.cstr_game_theory(problem=PyGMO.cec2006(4))
+
+    * problem: original PyGMO constrained problem
+    """
+    arg_list = []
+    if problem is None:
+        problem = cec2006(4)
+    arg_list.append(problem)
+    self._orig_init(*arg_list)
+
+cstr_game_theory._orig_init = cstr_game_theory.__init__
+cstr_game_theory.__init__ = _cstr_game_theory_ctor
 
 def _quadrature_encoding_ctor(self, problem=schwefel(1), idx=[0]):
     """

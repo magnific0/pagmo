@@ -418,6 +418,10 @@ BOOST_PYTHON_MODULE(_problem) {
 	meta_problem_wrapper<problem::con2uncon>("con2uncon","Constrained to unconstrained problem")
 		.def(init<optional<const problem::base &, problem::con2uncon::method_type> >());
 
+	// Constrained to Game Theory Sabotage MO meta-problem
+	meta_problem_wrapper<problem::cstr_game_theory>("cstr_game_theory","Constrained to multi-objective problem for game-theory optimization.")
+		.def(init<optional<const problem::base & > >());
+
 	// Shifted meta-problem
 	meta_problem_wrapper<problem::shifted>("shifted","Shifted problem")
 		.def(init<const problem::base &>())

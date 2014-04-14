@@ -279,12 +279,15 @@ void nsga2::evolve(population &pop) const
 	boost::uniform_int<int> pop_idx(0,NP-1);
 	boost::variate_generator<boost::mt19937 &, boost::uniform_int<int> > p_idx(m_urng,pop_idx);
 
+	int fevals = 0;
+
 	// Main NSGA-II loop
 	for (int g = 0; g<m_gen; g++) {
 		//At each generation we make a copy of the population into popnew
 		// We compute the crowding distance and the pareto rank of pop
 		pop.update_pareto_information();
 		population popnew(pop);
+		fevals -= popnew.problem().get_fevals();
 
 		//We create some pseudo-random permutation of the poulation indexes
 		std::random_shuffle(shuffle1.begin(),shuffle1.end(),p_idx);
@@ -312,6 +315,9 @@ void nsga2::evolve(population &pop) const
 			popnew.push_back(child2);
 		} // popnew now contains 2NP individuals
 
+		
+		fevals += popnew.problem().get_fevals();
+
 		// This method returns the sorted N best individuals in the population according to the crowded comparison operator
 		// defined in population.cpp
 		best_idx = popnew.get_best_idx(NP);
@@ -320,6 +326,7 @@ void nsga2::evolve(population &pop) const
 		pop.clear();
 		for (population::size_type i=0; i < NP; ++i) pop.push_back(popnew.get_individual(best_idx[i]).cur_x);
 	} // end of main SGA loop
+	prob.add_fevals( fevals );
 }
 
 /// Algorithm name

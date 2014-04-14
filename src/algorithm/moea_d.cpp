@@ -336,6 +336,7 @@ void moead::evolve(population &pop) const
 	// adtapt_ideal is set to true so that the problem will udate the ideal point at each call of the original obj fun.
 	pagmo::problem::decompose prob_decomposed(prob, problem::decompose::TCHEBYCHEFF, weights[0], ideal_point, true);
 
+	unsigned int init_fevals = prob_decomposed.get_fevals();
 	// We create a pseudo-random permutation of the indexes 1..NP
 	std::vector<population::size_type> shuffle(NP);
 	for(pagmo::population::size_type i=0; i < shuffle.size(); ++i) shuffle[i] = i;
@@ -422,6 +423,7 @@ void moead::evolve(population &pop) const
 	for (population::size_type i=0; i < X.size(); ++i) X[i] = pop.get_individual(i).cur_x;
 	pop.clear();
 	for (population::size_type i=0; i < X.size(); ++i) pop.push_back(X[i]);
+	prob.add_fevals( prob_decomposed.get_fevals() - init_fevals );
 }
 
 /// Algorithm name

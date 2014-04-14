@@ -92,6 +92,7 @@ SET(PAGMO_LIB_SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/problem/welded_beam.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/problem/tens_comp_string.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/problem/cstrs_co_evolution.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/problem/cstrs_game_theory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/problem/death_penalty.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/problem/cstrs_self_adaptive.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/problem/antibodies_problem.cpp

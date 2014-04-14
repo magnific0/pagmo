@@ -588,7 +588,11 @@ void game_theory::evolve(population &pop) const
 		m_init_dim = m_dim;
 
 		if ( m_dim == 0 ){
-			m_dim = prob_dimension;
+			if( m_obj_weights.empty() ){
+				m_dim = prob_dimension;
+			} else {
+				m_dim = m_obj_weights.size();
+			}
 		}
 		if ( m_dim > prob_dimension ) {
 			pagmo_throw(value_error, "The dimension of the decomposition can not be greater than the problem dimension.");

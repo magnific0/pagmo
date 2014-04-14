@@ -70,6 +70,7 @@
 #include "problem/death_penalty.h"
 #include "problem/cstrs_co_evolution.h"
 #include "problem/cstrs_self_adaptive.h"
+#include "problem/cstrs_game_theory.h"
 #include "problem/antibodies_problem.h"
 #include "problem/feasibility_only.h"
 #include "problem/shifted.h"

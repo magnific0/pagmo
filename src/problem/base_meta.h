@@ -49,46 +49,56 @@ namespace pagmo{ namespace problem {
 
 class __PAGMO_VISIBLE base_meta : public base
 {
-	public:
-		/// Constructor
-		base_meta(const base &p = ackley(1), int n=1, int ni=0, int nf=1, int nc=0, int nic=0, const std::vector<double>&c_tol = std::vector<double>()):
-			 base(n,ni,nf,nc,nic,c_tol), m_original_problem(p.clone()) {
-			 	//Setting the bounds according to the original problem
-				set_bounds(m_original_problem->get_lb(),m_original_problem->get_ub());
-			 }
-		/// Copy constructor
-		base_meta(const base_meta &p):base(p), m_original_problem(p.m_original_problem->clone()) {}
-		
-		unsigned int get_fevals() const 
-			{return m_original_problem->get_fevals();}
-		unsigned int get_cevals() const 
-			{return m_original_problem->get_cevals();}
-	        void add_fevals( unsigned int fevals ) const 
-		        { m_original_problem->add_fevals(fevals);}
-		void add_cevals( unsigned int cevals ) const 
-			{ m_original_problem->add_cevals(cevals);}
-			
-	protected:
-		bool compare_fitness_impl(const fitness_vector &f1, const fitness_vector &f2) const 
-			{return m_original_problem->compare_fitness_impl(f1,f2);}
-		//NOTE: It is not possible to use the same trick for the other two virtual compares as they also depend from
-		//the class parameter m_ic_dimension which in m_original_problem may be different than in the meta problem
-		bool compare_constraints_impl(const constraint_vector &c1, const constraint_vector &c2) const
-			{return m_original_problem->compare_constraints_impl(c1,c2);}
-		bool compare_fc_impl(const fitness_vector &f1, const constraint_vector &c1, const fitness_vector &f2, const constraint_vector &c2) const
-			{return m_original_problem->compare_fc_impl(f1,c1,f2,c2);}
-			
-	private:
-		friend class boost::serialization::access;
-		template <class Archive>
-		void serialize(Archive &ar, const unsigned int)
-		{
-			ar & boost::serialization::base_object<base>(*this);
-			ar & m_original_problem;
+  public:
+	/// Constructor
+	base_meta(const base &p = ackley(1), int n=1, int ni=0, int nf=1, 
+		int nc=0, int nic=0, const std::vector<double>&c_tol = std::vector<double>(),
+		decision_vector lb = decision_vector(), decision_vector ub = decision_vector()):
+		base(n,ni,nf,nc,nic,c_tol), m_original_problem(p.clone()) {
+		// Setting the bounds according to the original problem
+		if( lb.empty() && ub.empty()){
+			set_bounds( m_original_problem->get_lb(), m_original_problem->get_ub() );
+		} else if( lb.empty() ) {
+			set_bounds( m_original_problem->get_lb(), ub );
+		} else if( ub.empty() ) {
+			set_bounds( lb, m_original_problem->get_ub() );
+		} else {
+			set_bounds( lb, ub );
 		}
-	protected:
-		/// Smart pointer to the original problem instance
-		base_ptr m_original_problem;
+	}
+	/// Copy constructor
+	base_meta(const base_meta &p):base(p), m_original_problem(p.m_original_problem->clone()) {}
+	
+	unsigned int get_fevals() const 
+	{return m_original_problem->get_fevals();}
+	unsigned int get_cevals() const 
+	{return m_original_problem->get_cevals();}
+	void add_fevals( unsigned int fevals ) const 
+	{ m_original_problem->add_fevals(fevals);}
+	void add_cevals( unsigned int cevals ) const 
+	{ m_original_problem->add_cevals(cevals);}
+			
+  protected:
+	bool compare_fitness_impl(const fitness_vector &f1, const fitness_vector &f2) const 
+	{return m_original_problem->compare_fitness_impl(f1,f2);}
+	//NOTE: It is not possible to use the same trick for the other two virtual compares as they also depend from
+	//the class parameter m_ic_dimension which in m_original_problem may be different than in the meta problem
+	bool compare_constraints_impl(const constraint_vector &c1, const constraint_vector &c2) const
+	{return m_original_problem->compare_constraints_impl(c1,c2);}
+	bool compare_fc_impl(const fitness_vector &f1, const constraint_vector &c1, const fitness_vector &f2, const constraint_vector &c2) const
+	{return m_original_problem->compare_fc_impl(f1,c1,f2,c2);}
+			
+  private:
+	friend class boost::serialization::access;
+	template <class Archive>
+		void serialize(Archive &ar, const unsigned int)
+	{
+		ar & boost::serialization::base_object<base>(*this);
+		ar & m_original_problem;
+	}
+  protected:
+	/// Smart pointer to the original problem instance
+	base_ptr m_original_problem;
 };
 
 }} //namespaces
